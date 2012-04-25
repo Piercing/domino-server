@@ -98,8 +98,14 @@ public class Jugador extends Thread {
                 System.out.println("Jugador " + strj + " come");
                 Ficha ficha = _host.getFicha();
                 enviarFicha(ficha);
-            } else if (comando.startsWith("Poner")) { //Poner Ficha
+            } else if (comando.equals("Poner")) { //Poner Ficha
+                String[] trenArgs = args[1].split(",");
+                
+                
+                
+                
                 if (args.length == 2) {
+                    
                     Ficha ficha = new Ficha(args[1]);
                     if (_host.ponerFichaTren(this.getNumero(), ficha)) {
                         System.out.println("Jugador " + strj + " puso " + args[1]);
