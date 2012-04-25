@@ -74,11 +74,11 @@ public class Jugador extends Thread {
     @Override
     public void run() {
 
-        tren = new Tren(this);
         try {
             entrada = new BufferedReader(new InputStreamReader(_socket.getInputStream()));
             salida = new PrintStream(_socket.getOutputStream());
             listener = new Listener(this, entrada);
+            tren = new Tren(this);            
             this.enviarNumero();
             Thread t = new Thread(listener);
             t.start();
@@ -100,17 +100,11 @@ public class Jugador extends Thread {
                 enviarFicha(ficha);
             } else if (comando.equals("Poner")) { //Poner Ficha
                 String[] trenArgs = args[1].split(",");
-                
-                
-                
-                
-                if (args.length == 2) {
-                    
-                    Ficha ficha = new Ficha(args[1]);
-                    if (_host.ponerFichaTren(this.getNumero(), ficha)) {
-                        System.out.println("Jugador " + strj + " puso " + args[1]);
-                        quitarFicha(ficha);
-                    }
+                int numeroTren = Integer.parseInt(trenArgs[0]);
+                Ficha ficha = new Ficha(trenArgs[1]);                
+                if (_host.ponerFichaTren(this.getNumero(), numeroTren, ficha)) {
+                    System.out.println("Jugador " + strj + " puso " + trenArgs[0] + " en tren " + trenArgs[1]);
+                    quitarFicha(ficha);
                 }
             }
         }
