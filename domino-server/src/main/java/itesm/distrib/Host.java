@@ -9,6 +9,7 @@ public class Host {
     private HashMap<Integer, Jugador> jugadores = new HashMap<>();
     private HashMap<Integer, Ficha> fichas = new HashMap<>();
     private Tren trenPrincipal;
+    private Ficha motor;
 
     public int getConectados() {
         return jugadores.size();
@@ -45,7 +46,8 @@ public class Host {
                 //que coincide con la ronda actual. De ser así la colocamos como
                 //ficha inicial en el tren principal y no la añadimos al hash de fichas.
                 if (rondaActual == i && rondaActual == j) {
-                    trenPrincipal.agregarFicha(new Ficha(i, j));
+                    motor = new Ficha(i, j);
+                    trenPrincipal.agregarFicha(motor);
                 } else {
                     fichas.put(k++, new Ficha(i, j));
                 }
@@ -81,6 +83,7 @@ public class Host {
             Jugador j = i.next();
             j.enviarFichas();
         }
+        enviarMotor();
         enviarTrenes();
     }
 
@@ -133,7 +136,9 @@ public class Host {
         boolean agregar = false;
 
         if (tren.EsVacio()) {
-            agregar = true;
+            if(motor.getDerecha() == ficha.getIzquierda()){
+                agregar = true;
+            }
         } else {
             Ficha ultima = tren.getUltimaFicha();
             if (ultima.getDerecha() == ficha.getIzquierda()) {
@@ -188,5 +193,9 @@ public class Host {
             Jugador j = i.next();
             this.broadcast("Tren:" + j.getTren().toString());
         }        
+    }
+    
+    private void enviarMotor(){
+        this.broadcast("Motor:"+motor.toString());                
     }
 }
