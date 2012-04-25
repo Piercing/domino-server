@@ -6,9 +6,9 @@ public class Host {
 
     boolean comenzado;
     private int numeroJugadores;
-    private Ficha fichaInicio;
     private HashMap<Integer, Jugador> jugadores = new HashMap<>();
     private HashMap<Integer, Ficha> fichas = new HashMap<>();
+    private Tren trenPrincipal;
 
     public int getConectados() {
         return jugadores.size();
@@ -18,16 +18,8 @@ public class Host {
         return numeroJugadores;
     }
 
-    public Ficha getFichaInicio() {
-        return fichaInicio;
-    }
-
     public void setNumeroJugadores(int value) {
         numeroJugadores = value;
-    }
-
-    public void setFichaInicio(Ficha ficha) {
-        fichaInicio = ficha;
     }
 
     public Collection<Jugador> getJugadores() {
@@ -36,6 +28,7 @@ public class Host {
 
     public Host(int rondaActual) {
         jugadores = new HashMap<>();
+        trenPrincipal = new Tren();
         iniciarFichas(rondaActual);
     }
 
@@ -49,10 +42,10 @@ public class Host {
             for (int j = i; j <= 12; j++) {
                 //Verificamos si la ficha que estamos por agregar es una mula
                 //que coincide con la ronda actual. De ser así la colocamos como
-                //ficha inicial y no la añadimos al hash de fichas.
-                if(rondaActual == i && rondaActual == j){
-                    this.fichaInicio = new Ficha(i, j);
-                }else{
+                //ficha inicial en el tren principal y no la añadimos al hash de fichas.
+                if (rondaActual == i && rondaActual == j) {
+                    trenPrincipal.agregarFicha(new Ficha(i, j));
+                } else {
                     fichas.put(k++, new Ficha(i, j));
                 }
             }
@@ -65,8 +58,7 @@ public class Host {
                 int numero = jugadores.size() + 1;
                 jugador.setNumero(numero);
                 jugadores.put(numero, jugador);
-                jugador.run();
-
+                jugador.start();
                 System.out.println("Nuevo jugador");
                 if (this.getConectados() == this.getNumeroJugadores()) {
                     comenzar();
@@ -175,11 +167,18 @@ public class Host {
         }
     }
 
+    /**
+     * Envía a todos los jugadores los trenes en juego.
+     * Se enviarán tantos trenes como Jugadores existan más el tren central.
+     */
     private void enviarTrenes() {
+        //Enviamos el tren principal.
+        this.broadcast("Tren:" + trenPrincipal.toString());
         Iterator<Jugador> i = getJugadores().iterator();
+        //Enviamos el tren de cada uno de los jugadores
         while (i.hasNext()) {
             Jugador j = i.next();
             this.broadcast("Tren:" + j.getTren().toString());
-        }
+        }        
     }
 }
