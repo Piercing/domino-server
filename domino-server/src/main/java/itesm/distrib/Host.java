@@ -179,7 +179,7 @@ public class Host {
      * Envía a todos los jugadores los trenes en juego.
      * Se enviarán tantos trenes como Jugadores existan más el tren central.
      */
-    private void enviarTrenes() {
+    public void enviarTrenes() {
         //Enviamos el tren principal.
         this.broadcast("Tren:" + trenPrincipal.toString());
         Iterator<Jugador> i = getJugadores().iterator();

@@ -78,7 +78,7 @@ public class Jugador extends Thread {
             entrada = new BufferedReader(new InputStreamReader(_socket.getInputStream()));
             salida = new PrintStream(_socket.getOutputStream());
             listener = new Listener(this, entrada);
-            tren = new Tren(this);            
+            tren = new Tren(this);
             this.enviarNumero();
             Thread t = new Thread(listener);
             t.start();
@@ -89,23 +89,33 @@ public class Jugador extends Thread {
     }
 
     public void interpretarComando(String mensaje) {
-        String strj = String.valueOf(this.getNumero());
+        String numeroJugador = String.valueOf(this.getNumero());
 
         String[] args = mensaje.split(":");
         if (args.length >= 1) {
             String comando = args[0];
-            if (comando.equals("Comer")) {
-                System.out.println("Jugador " + strj + " come");
-                Ficha ficha = _host.getFicha();
-                enviarFicha(ficha);
-            } else if (comando.equals("Poner")) { //Poner Ficha
-                String[] trenArgs = args[1].split(",");
-                int numeroTren = Integer.parseInt(trenArgs[0]);
-                Ficha ficha = new Ficha(trenArgs[1]);                
-                if (_host.ponerFichaTren(this.getNumero(), numeroTren, ficha)) {
-                    System.out.println("Jugador " + strj + " puso " + trenArgs[0] + " en tren " + trenArgs[1]);
-                    quitarFicha(ficha);
-                }
+            Ficha ficha = null;
+            switch (comando) {
+                case "Comer":
+                    System.out.println("Jugador " + numeroJugador + " come");
+                    ficha = _host.getFicha();
+                    enviarFicha(ficha);
+                    break;
+                case "Poner":
+                    //Poner Ficha
+                    String[] trenArgs = args[1].split(",");
+                    int numeroTren = Integer.parseInt(trenArgs[0]);
+                    ficha = new Ficha(trenArgs[1]);
+                    if (_host.ponerFichaTren(this.getNumero(), numeroTren, ficha)) {
+                        System.out.println("Jugador " + numeroJugador + " puso " + trenArgs[0] + " en tren " + trenArgs[1]);
+                        quitarFicha(ficha);
+                    }
+                    break;
+                case "Pasar":
+                    System.out.println("Jugador " + numeroJugador + "paso su turno");
+                    this.tren.setMarcado(true);
+                    _host.enviarTrenes();
+                    break;
             }
         }
     }
