@@ -68,7 +68,7 @@ public class Jugador extends Thread {
     public Jugador(Host host, Socket socket) {
         setHost(host);
         setSocket(socket);
-        fichas = new ArrayList<Ficha>();
+        fichas = new ArrayList<>();
     }
 
     @Override
@@ -115,7 +115,7 @@ public class Jugador extends Thread {
     }
 
     void enviarFichas() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         String coma = "";
         Iterator<Ficha> f = fichas.iterator();
         sb.append("Fichas:");

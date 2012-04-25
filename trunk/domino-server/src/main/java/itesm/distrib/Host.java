@@ -7,8 +7,8 @@ public class Host {
     boolean comenzado;
     private int numeroJugadores;
     private Ficha fichaInicio;
-    private HashMap<Integer, Jugador> jugadores = new HashMap<Integer, Jugador>();
-    private HashMap<Integer, Ficha> fichas = new HashMap<Integer, Ficha>();
+    private HashMap<Integer, Jugador> jugadores = new HashMap<>();
+    private HashMap<Integer, Ficha> fichas = new HashMap<>();
 
     public int getConectados() {
         return jugadores.size();
@@ -34,18 +34,27 @@ public class Host {
         return jugadores.values();
     }
 
-    public Host() {
-        jugadores = new HashMap<Integer, Jugador>();
-        iniciarFichas();
+    public Host(int rondaActual) {
+        jugadores = new HashMap<>();
+        iniciarFichas(rondaActual);
     }
 
-    private void iniciarFichas() {
+    //Inicializa el Hashmap que incluye todas las fichas excluyendo la ficha con
+    //la que se inicia la ronda actual.
+    private void iniciarFichas(int rondaActual) {
 
-        fichas = new HashMap<Integer, Ficha>();
+        fichas = new HashMap<>();
         int k = 1;
         for (int i = 1; i <= 12; i++) {
             for (int j = i; j <= 12; j++) {
-                fichas.put(k++, new Ficha(i, j));
+                //Verificamos si la ficha que estamos por agregar es una mula
+                //que coincide con la ronda actual. De ser así la colocamos como
+                //ficha inicial y no la añadimos al hash de fichas.
+                if(rondaActual == i && rondaActual == j){
+                    this.fichaInicio = new Ficha(i, j);
+                }else{
+                    fichas.put(k++, new Ficha(i, j));
+                }
             }
         }
     }
@@ -82,8 +91,10 @@ public class Host {
         enviarTrenes();
     }
 
+    /**
+     * Reparte las fichas en juego de forma aleatoria entre los distintos jugadores.
+     */
     private void repartirFichas() {
-        Random r = new Random();
         int numeroFichas = 0;
         if ((numeroFichas = getNumeroFichas()) != 0) {
 
@@ -105,7 +116,7 @@ public class Host {
         Ficha result = null;
         Random r = new Random();
         Set<Integer> setLlaves = fichas.keySet();
-        ArrayList<Integer> listLlaves = new ArrayList<Integer>();
+        ArrayList<Integer> listLlaves = new ArrayList<>();
         listLlaves.addAll(setLlaves);
 
         int posicion = r.nextInt(listLlaves.size());
