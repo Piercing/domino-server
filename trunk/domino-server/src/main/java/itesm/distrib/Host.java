@@ -29,6 +29,7 @@ public class Host {
     public Host(int rondaActual) {
         jugadores = new HashMap<>();
         trenPrincipal = new Tren();
+        trenPrincipal.setEsPrincipal(true);
         iniciarFichas(rondaActual);
     }
 
@@ -119,9 +120,16 @@ public class Host {
         return result;
     }
 
-    public synchronized boolean ponerFichaTren(int numero, Ficha ficha) {
-        Jugador jugador = jugadores.get(numero);
-        Tren tren = jugador.getTren();
+    public synchronized boolean ponerFichaTren(int numeroJugador, int numeroTren, Ficha ficha) {
+        Jugador jugador = jugadores.get(numeroJugador);
+        Tren tren;
+        if(numeroTren == -1){
+            tren = trenPrincipal; }
+        else if (numeroJugador == numeroTren ) { 
+            tren = jugador.getTren();}
+        else { 
+            tren = jugadores.get(numeroTren).getTren(); }
+
         boolean agregar = false;
 
         if (tren.EsVacio()) {
@@ -133,7 +141,7 @@ public class Host {
             }
         }
         if (agregar) {
-            jugador.getTren().agregarFicha(ficha);
+            tren.agregarFicha(ficha);
             enviarTrenes();
         }
         return agregar;

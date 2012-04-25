@@ -51,14 +51,16 @@ class Tren {
     public Tren(String str) {
         this();
         String[] a = str.split(";");
-        if (a.length == 4) {
+        if (a.length >= 3) {
             setEsPrincipal(Boolean.parseBoolean(a[0]));            
             setNumero(Integer.parseInt(a[1]));
             setMarcado(Boolean.parseBoolean(a[2]));
-            String[] strFichas = a[3].split(",");
-            for (int i = 0; i < strFichas.length; i++) {
-                Ficha f = new Ficha(strFichas[i]);
-                this.agregarFicha(f);
+            if(a.length == 4){
+                String[] strFichas = a[3].split(",");
+                for (int i = 0; i < strFichas.length; i++) {
+                    Ficha f = new Ficha(strFichas[i]);
+                    this.agregarFicha(f);
+                }
             }
         }
     }
@@ -68,7 +70,7 @@ class Tren {
         StringBuilder sb = new StringBuilder();
         sb.append(String.valueOf(principal));
         sb.append(";");
-        sb.append(String.valueOf(numero));
+        sb.append(String.valueOf(getNumero()));
         sb.append(";");
         sb.append(String.valueOf(marcado));
         sb.append(";");        
