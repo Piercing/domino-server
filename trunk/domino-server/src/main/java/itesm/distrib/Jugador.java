@@ -112,9 +112,13 @@ public class Jugador extends Thread {
                     }
                     break;
                 case "Pasar":
-                    System.out.println("Jugador " + numeroJugador + "paso su turno");
+                    System.out.println("Jugador " + numeroJugador + " paso su turno");
                     this.tren.setMarcado(true);
                     _host.enviarTrenes();
+                    break;
+                case "FinTurno":
+                    System.out.println("Jugador " + numeroJugador + " terminó su turno");
+                    pasaTurnoSiguienteJugador();
                     break;
             }
         }
@@ -152,6 +156,20 @@ public class Jugador extends Thread {
     void enviarMensaje(String mensaje) {
         if (salida != null) {
             salida.println(mensaje);
+        }
+    }
+
+    public void tomarTurno(Jugador jugador) {  
+        this.enviarMensaje("Turno:"+jugador.getNumero());
+    }
+
+    private void pasaTurnoSiguienteJugador() {
+        int siguienteJugador = this.getNumero() < _host.getNumeroJugadores() ? this.getNumero()+1 : 1;
+        for(Jugador jugador :_host.getJugadores()){
+            if(jugador.getNumero() == siguienteJugador){
+                jugador.tomarTurno(jugador);
+                return;
+            }
         }
     }
 }

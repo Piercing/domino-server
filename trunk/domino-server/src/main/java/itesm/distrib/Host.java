@@ -10,6 +10,7 @@ public class Host {
     private HashMap<Integer, Ficha> fichas = new HashMap<>();
     private Tren trenPrincipal;
     private Ficha motor;
+    private int rondaActual;
 
     public int getConectados() {
         return jugadores.size();
@@ -31,7 +32,8 @@ public class Host {
         jugadores = new HashMap<>();
         trenPrincipal = new Tren();
         trenPrincipal.setEsPrincipal(true);
-        iniciarFichas(rondaActual);
+        this.rondaActual = rondaActual;
+        iniciarFichas(rondaActual);        
     }
 
     //Inicializa el Hashmap que incluye todas las fichas excluyendo la ficha con
@@ -77,14 +79,16 @@ public class Host {
     void comenzar() {
         comenzado = true;
         System.out.println("Inicia el juego");
-        repartirFichas();
-        Iterator<Jugador> i = getJugadores().iterator();
-        while (i.hasNext()) {
-            Jugador j = i.next();
-            j.enviarFichas();
+        repartirFichas();      
+        for(Jugador jugador : getJugadores()){
+            jugador.enviarFichas();
+            if(jugadorInicia(jugador)){
+                jugador.tomarTurno(jugador);
+            }
         }
         enviarMotor();
         enviarTrenes();
+        //Tomamos el
     }
 
     /**
@@ -197,5 +201,13 @@ public class Host {
     
     private void enviarMotor(){
         this.broadcast("Motor:"+motor.toString());                
+    }
+
+    private boolean jugadorInicia(Jugador jugador) {
+        int numeroJugadorAIniciar = (rondaActual % numeroJugadores) + 1;
+        if(jugador.getNumero() == numeroJugadorAIniciar){
+            return true;
+        }
+        return false;
     }
 }

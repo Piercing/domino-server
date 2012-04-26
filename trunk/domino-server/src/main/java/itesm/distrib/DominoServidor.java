@@ -9,7 +9,7 @@ public class DominoServidor {
     private static int rondaActual;
     private Host host;
     private ServerSocket server;
-    private int puerto;
+    private int puerto;   
 
     /**
      * Crea una nueva instancia del servidor para jugar dominó.
@@ -20,7 +20,7 @@ public class DominoServidor {
     public DominoServidor(int puerto, int numeroJugadores) {
         this.host = new Host(rondaActual > 0 ? rondaActual-- : 12);
         this.puerto = puerto;
-        host.setNumeroJugadores(numeroJugadores);
+        host.setNumeroJugadores(numeroJugadores);        
     }
 
     /**
