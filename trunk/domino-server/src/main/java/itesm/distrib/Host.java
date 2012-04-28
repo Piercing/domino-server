@@ -29,6 +29,7 @@ public class Host {
     }
 
     public Host(int rondaActual) {
+        comenzado = false;
         jugadores = new HashMap<>();
         trenPrincipal = new Tren();
         trenPrincipal.setEsPrincipal(true);
@@ -65,9 +66,11 @@ public class Host {
                 jugadores.put(numero, jugador);
                 jugador.start();
                 System.out.println("Nuevo jugador");
+                /*
                 if (this.getConectados() == this.getNumeroJugadores()) {
                     comenzar();
                 }
+                */
             } else {
                 jugador.enviarMensaje("Máximo de jugadores alcanzado");
             }
@@ -76,18 +79,21 @@ public class Host {
         }
     }
 
-    void comenzar() {
-        comenzado = true;
-        System.out.println("Inicia el juego");
-        repartirFichas();      
-        for(Jugador jugador : getJugadores()){
-            jugador.enviarFichas();
-            if(jugadorInicia(jugador)){
-                jugador.tomarTurno(jugador);
+    synchronized void comenzar() {
+        if(!comenzado){
+            comenzado = true;
+            System.out.println("Inicia el juego");
+            broadcast("Inicia el juego.");
+            repartirFichas();      
+            for(Jugador jugador : getJugadores()){
+                jugador.enviarFichas();
+                if(jugadorInicia(jugador)){
+                    jugador.tomarTurno(jugador);
+                }
             }
+            enviarMotor();
+            enviarTrenes();
         }
-        enviarMotor();
-        enviarTrenes();
         //Tomamos el
     }
 
@@ -151,7 +157,6 @@ public class Host {
         }
         if (agregar) {
             tren.agregarFicha(ficha);
-            enviarTrenes();
         }
         return agregar;
     }
@@ -190,21 +195,25 @@ public class Host {
      */
     public void enviarTrenes() {
         //Enviamos el tren principal.
-        this.broadcast("Tren:" + trenPrincipal.toString());
+        this.EnviarTren(trenPrincipal);
         Iterator<Jugador> i = getJugadores().iterator();
         //Enviamos el tren de cada uno de los jugadores
         while (i.hasNext()) {
             Jugador j = i.next();
-            this.broadcast("Tren:" + j.getTren().toString());
+            this.EnviarTren(j.getTren());
         }        
-    }
+    }    
+    
+    public void EnviarTren(Tren t){
+        this.broadcast("Tren:" + t.toString());
+    }    
     
     private void enviarMotor(){
         this.broadcast("Motor:"+motor.toString());                
     }
 
     private boolean jugadorInicia(Jugador jugador) {
-        int numeroJugadorAIniciar = (rondaActual % numeroJugadores) + 1;
+        int numeroJugadorAIniciar = (rondaActual % getConectados()) + 1;
         if(jugador.getNumero() == numeroJugadorAIniciar){
             return true;
         }
