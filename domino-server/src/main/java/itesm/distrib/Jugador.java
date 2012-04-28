@@ -96,6 +96,9 @@ public class Jugador extends Thread {
             String comando = args[0];
             Ficha ficha = null;
             switch (comando) {
+                case "Comenzar":
+                    _host.comenzar();
+                    break;
                 case "Comer":
                     System.out.println("Jugador " + numeroJugador + " come");
                     ficha = _host.getFicha();
@@ -109,6 +112,8 @@ public class Jugador extends Thread {
                     if (_host.ponerFichaTren(this.getNumero(), numeroTren, ficha)) {
                         System.out.println("Jugador " + numeroJugador + " puso " + trenArgs[0] + " en tren " + trenArgs[1]);
                         quitarFicha(ficha);
+                        this.tren.setMarcado(false);
+                        _host.enviarTrenes();
                     }
                     break;
                 case "Pasar":
@@ -164,8 +169,8 @@ public class Jugador extends Thread {
     }
 
     private void pasaTurnoSiguienteJugador() {
-        int siguienteJugador = this.getNumero() < _host.getNumeroJugadores() ? this.getNumero()+1 : 1;
-        for(Jugador jugador :_host.getJugadores()){
+        int siguienteJugador = this.getNumero() < _host.getConectados() ? this.getNumero()+1 : 1;
+        for(Jugador jugador : _host.getJugadores()){
             if(jugador.getNumero() == siguienteJugador){
                 jugador.tomarTurno(jugador);
                 return;
