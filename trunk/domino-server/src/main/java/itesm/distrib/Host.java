@@ -43,6 +43,16 @@ public class Host {
 
         fichas = new HashMap<>();
         int k = 1;
+        
+        /*
+        motor = new Ficha(12,12);
+        trenPrincipal.agregarFicha(motor);        
+        for(int i = 0; i < 15; i++){
+            fichas.put(k++, new Ficha(11,12));
+        }
+        */
+        
+        
         for (int i = 1; i <= 12; i++) {
             for (int j = i; j <= 12; j++) {
                 //Verificamos si la ficha que estamos por agregar es una mula
@@ -55,7 +65,7 @@ public class Host {
                     fichas.put(k++, new Ficha(i, j));
                 }
             }
-        }
+        }       
     }
 
     synchronized void agregarJugador(Jugador jugador) {
@@ -80,12 +90,13 @@ public class Host {
     }
 
     synchronized void comenzar() {
-        if(!comenzado){
+        if(!comenzado){            
             comenzado = true;
             System.out.println("Inicia el juego");
             broadcast("Inicia el juego.");
+            reiniciarJugadores();            
             repartirFichas();      
-            for(Jugador jugador : getJugadores()){
+            for(Jugador jugador : getJugadores()){                
                 jugador.enviarFichas();
                 if(jugadorInicia(jugador)){
                     jugador.tomarTurno(jugador);
@@ -114,6 +125,12 @@ public class Host {
                     jugador.tomarFicha(ficha);
                 }
             }
+        }
+    }
+    
+    private void reiniciarJugadores(){
+        for(Jugador jugador : getJugadores()){
+            jugador.reiniciar();
         }
     }
 
@@ -156,13 +173,27 @@ public class Host {
             }
         }
         if (agregar) {
-            tren.agregarFicha(ficha);
+            tren.agregarFicha(ficha);         
+            jugador.quitarFicha(ficha);
+            if(jugador.numeroFichas()== 0){
+                FinJuego();                
+                this.broadcast(jugador.toString() + " ha ganado el juego.!");
+            }            
         }
         return agregar;
     }
 
+    void FinJuego(){
+        this.comenzado = false;
+        Iterator<Jugador> i = getJugadores().iterator();
+        while(i.hasNext()){
+            Jugador j = i.next();
+            enviarPuntos(j);
+        }
+    }
+    
     private int getNumeroFichas() {
-
+       
         int j = jugadores.size();
         if (j >= 1 && j <= 3) {
             return 16;
@@ -178,7 +209,10 @@ public class Host {
             return 9;
         } else {
             return 0;
-        }
+        }       
+                
+        //return 3;
+        
     }
 
     private void broadcast(String mensaje) {
@@ -218,5 +252,10 @@ public class Host {
             return true;
         }
         return false;
+    }
+    
+    private void enviarPuntos(Jugador j){
+        Integer puntos = j.getPuntos();
+        this.broadcast("Puntos:" + j.toString() + ";" + puntos.toString());
     }
 }
