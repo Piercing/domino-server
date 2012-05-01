@@ -59,5 +59,9 @@ class Ficha {
             return this.getIzquierda() == f.getIzquierda() && this.getDerecha() == f.getDerecha()
                     || this.getDerecha() == f.getIzquierda() && this.getIzquierda() == f.getDerecha();
         }
-    }
+    }    
+    
+    public int getPuntos(){
+        return getIzquierda() + getDerecha();
+    }    
 }

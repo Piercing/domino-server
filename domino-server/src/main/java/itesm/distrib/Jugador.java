@@ -64,7 +64,16 @@ public class Jugador extends Thread {
             }
         }
     }
+    
+    void reiniciar(){
+        fichas = new ArrayList<Ficha>();
+        tren = new Tren(this);
+    }
 
+    int numeroFichas(){
+        return fichas.size();
+    }
+    
     public Jugador(Host host, Socket socket) {
         setHost(host);
         setSocket(socket);
@@ -102,6 +111,7 @@ public class Jugador extends Thread {
                 case "Comer":
                     System.out.println("Jugador " + numeroJugador + " come");
                     ficha = _host.getFicha();
+                    this.fichas.add(ficha);
                     enviarFicha(ficha);
                     break;
                 case "Poner":
@@ -110,10 +120,11 @@ public class Jugador extends Thread {
                     int numeroTren = Integer.parseInt(trenArgs[0]);
                     ficha = new Ficha(trenArgs[1]);
                     if (_host.ponerFichaTren(this.getNumero(), numeroTren, ficha)) {
-                        System.out.println("Jugador " + numeroJugador + " puso " + trenArgs[0] + " en tren " + trenArgs[1]);
-                        quitarFicha(ficha);
-                        this.tren.setMarcado(false);
-                        _host.enviarTrenes();
+                        System.out.println("Jugador " + numeroJugador + " puso " + trenArgs[0] + " en tren " + trenArgs[1]);                        
+                        if(_host.comenzado){
+                            this.tren.setMarcado(false);
+                            _host.enviarTrenes();
+                        }
                     }
                     break;
                 case "Pasar":
@@ -123,7 +134,9 @@ public class Jugador extends Thread {
                     break;
                 case "FinTurno":
                     System.out.println("Jugador " + numeroJugador + " terminó su turno");
-                    pasaTurnoSiguienteJugador();
+                    if(_host.comenzado){
+                        pasaTurnoSiguienteJugador();
+                    }
                     break;
             }
         }
@@ -176,5 +189,22 @@ public class Jugador extends Thread {
                 return;
             }
         }
-    }
+    }    
+    
+    public int getPuntos(){
+        Iterator<Ficha> i = fichas.iterator();
+        int puntos = 0;
+        while(i.hasNext()){
+            Ficha f = i.next();
+            puntos += f.getPuntos();
+        }
+        return puntos;
+    }      
+    
+    @Override
+    public String toString(){
+        Integer num = (Integer)_numero;
+        return "Jugador " + num.toString();
+    }    
 }
+
